@@ -8,8 +8,8 @@ export function extractTextFromHtml(htmlContent) {
 }
 
 export async function fetchAndConvertDocxToHtml(fileURL) {
-  const separator = fileURL.includes('?') ? '&' : '?';
-  const response = await fetch(`${fileURL}${separator}t=${Date.now()}`);
+  const cacheBuster = `?t=${Date.now()}`;
+  const response = await fetch(fileURL + cacheBuster);
   if (!response.ok) throw new Error('Failed to fetch DOCX file');
   const arrayBuffer = await response.arrayBuffer();
   const result = await mammoth.convertToHtml({ arrayBuffer });
@@ -23,8 +23,8 @@ export async function convertDocxToHtml(docxFile) {
 }
 
 export async function fetchAndExtractDocxText(fileURL) {
-  const separator = fileURL.includes('?') ? '&' : '?';
-  const response = await fetch(`${fileURL}${separator}t=${Date.now()}`);
+  const cacheBuster = `?t=${Date.now()}`;
+  const response = await fetch(fileURL + cacheBuster);
   if (!response.ok) throw new Error('Failed to fetch DOCX file');
   const arrayBuffer = await response.arrayBuffer();
   const result = await mammoth.extractRawText({ arrayBuffer });
@@ -63,13 +63,13 @@ export async function convertHtmlToDocx(htmlContent) {
   try {
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = htmlContent;
-    
+
     const children = [];
-    
+
     // Parse HTML elements and convert to docx elements
     const parseNode = (node) => {
       const nodeName = node.nodeName.toLowerCase();
-      
+
       // Handle headings
       if (nodeName.match(/^h[1-6]$/)) {
         const level = parseInt(nodeName.charAt(1));
@@ -77,14 +77,14 @@ export async function convertHtmlToDocx(htmlContent) {
         return new Paragraph({
           children: runs,
           heading: level === 1 ? HeadingLevel.HEADING_1 :
-                  level === 2 ? HeadingLevel.HEADING_2 :
-                  level === 3 ? HeadingLevel.HEADING_3 :
-                  level === 4 ? HeadingLevel.HEADING_4 :
+            level === 2 ? HeadingLevel.HEADING_2 :
+              level === 3 ? HeadingLevel.HEADING_3 :
+                level === 4 ? HeadingLevel.HEADING_4 :
                   level === 5 ? HeadingLevel.HEADING_5 :
-                  HeadingLevel.HEADING_6,
+                    HeadingLevel.HEADING_6,
         });
       }
-      
+
       // Handle paragraphs
       if (nodeName === 'p') {
         const runs = parseTextContent(node);
@@ -94,7 +94,7 @@ export async function convertHtmlToDocx(htmlContent) {
           alignment: alignment,
         });
       }
-      
+
       // Handle lists
       if (nodeName === 'li') {
         const runs = parseTextContent(node);
@@ -103,7 +103,7 @@ export async function convertHtmlToDocx(htmlContent) {
           bullet: { level: 0 },
         });
       }
-      
+
       // Handle blockquotes
       if (nodeName === 'blockquote') {
         const runs = parseTextContent(node);
@@ -113,19 +113,19 @@ export async function convertHtmlToDocx(htmlContent) {
           indent: { left: 720 }, // 0.5 inch
         });
       }
-      
+
       // Handle tables
       if (nodeName === 'table') {
         return parseTable(node);
       }
-      
+
       return null;
     };
-    
+
     // Parse text content with formatting
     const parseTextContent = (element) => {
       const runs = [];
-      
+
       const traverse = (node, inherited = {}) => {
         if (node.nodeType === Node.TEXT_NODE) {
           const text = node.textContent;
@@ -140,40 +140,40 @@ export async function convertHtmlToDocx(htmlContent) {
         } else if (node.nodeType === Node.ELEMENT_NODE) {
           const nodeName = node.nodeName.toLowerCase();
           const newInherited = { ...inherited };
-          
+
           if (nodeName === 'strong' || nodeName === 'b') newInherited.bold = true;
           if (nodeName === 'em' || nodeName === 'i') newInherited.italics = true;
           if (nodeName === 'u') newInherited.underline = true;
-          
+
           Array.from(node.childNodes).forEach(child => traverse(child, newInherited));
         }
       };
-      
+
       traverse(element);
       return runs;
     };
-    
+
     // Get alignment from style
     const getAlignment = (element) => {
-      const align = element.style.textAlign || 
-                    element.getAttribute('align') || 
-                    window.getComputedStyle(element).textAlign;
-      
+      const align = element.style.textAlign ||
+        element.getAttribute('align') ||
+        window.getComputedStyle(element).textAlign;
+
       if (align === 'center') return AlignmentType.CENTER;
       if (align === 'right') return AlignmentType.RIGHT;
       if (align === 'justify') return AlignmentType.JUSTIFIED;
       return AlignmentType.LEFT;
     };
-    
+
     // Parse table
     const parseTable = (tableElement) => {
       const rows = [];
       const tableRows = tableElement.querySelectorAll('tr');
-      
+
       tableRows.forEach(tr => {
         const cells = [];
         const tableCells = tr.querySelectorAll('td, th');
-        
+
         tableCells.forEach(cell => {
           const runs = parseTextContent(cell);
           cells.push(new TableCell({
@@ -183,16 +183,16 @@ export async function convertHtmlToDocx(htmlContent) {
             width: { size: 100 / tableCells.length, type: WidthType.PERCENTAGE },
           }));
         });
-        
+
         rows.push(new TableRow({ children: cells }));
       });
-      
+
       return new Table({
         rows: rows,
         width: { size: 100, type: WidthType.PERCENTAGE },
       });
     };
-    
+
     // Process all child nodes
     const processChildren = (parent) => {
       Array.from(parent.children).forEach(child => {
@@ -212,21 +212,21 @@ export async function convertHtmlToDocx(htmlContent) {
         }
       });
     };
-    
+
     processChildren(tempDiv);
-    
+
     // If no content was parsed, add a blank paragraph
     if (children.length === 0) {
       children.push(new Paragraph({ children: [new TextRun('')] }));
     }
-    
+
     // Create document
     const doc = new Document({
       sections: [{
         properties: {
           page: {
             margin: {
-              top: 720,   
+              top: 720,
               right: 720,
               bottom: 720,
               left: 720,
@@ -236,11 +236,11 @@ export async function convertHtmlToDocx(htmlContent) {
         children: children,
       }],
     });
-    
+
     // Convert to blob
     const blob = await Packer.toBlob(doc);
     return blob;
-    
+
   } catch (error) {
     console.error('Error converting HTML to DOCX:', error);
     throw new Error('Failed to convert content to DOCX format');

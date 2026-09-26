@@ -13,11 +13,11 @@ import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import DOMPurify from 'dompurify';
 
-import { 
-  fetchAndConvertDocxToHtml, 
+import {
+  fetchAndConvertDocxToHtml,
   constructMaterialStoragePath,
   constructMaterialDbPath,
-  convertHtmlToDocx 
+  convertHtmlToDocx
 } from '../../utils/materialUtils';
 import DPLayout from '../../components/DPLayout/DPLayout';
 
@@ -32,14 +32,14 @@ async function uploadBlobToStorage(storage, path, blob, fileName) {
 //Configure DOMPurify
 const purifyConfig = {
   ALLOWED_TAGS: [
-    'b', 'i', 'strong', 'em', 'u', 'p', 'br', 'ul', 'ol', 'li', 
-    'a', 'span', 'h1','h2','h3','h4','h5','h6','table','thead','tbody','tr','th','td','blockquote',
+    'b', 'i', 'strong', 'em', 'u', 'p', 'br', 'ul', 'ol', 'li',
+    'a', 'span', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'blockquote',
     'img'
   ],
   ALLOWED_ATTR: ['href', 'target', 'style', 'colspan', 'rowspan', 'align', 'src', 'alt', 'title', 'width', 'height'],
   ALLOWED_CSS_PROPERTIES: [
-    'color', 'background-color', 'text-align', 'font-weight', 
-    'font-style', 'text-decoration', 'border', 'border-collapse', 
+    'color', 'background-color', 'text-align', 'font-weight',
+    'font-style', 'text-decoration', 'border', 'border-collapse',
     'width', 'height', 'padding', 'margin'
   ],
   FORBID_TAGS: ['iframe', 'script', 'object', 'embed'],
@@ -61,10 +61,10 @@ export default function MaterialEditor({ userData }) {
   //Load material metadata
   useEffect(() => {
     if (!userData?.uid) return;
-    
+
     const matPath = constructMaterialDbPath(userData.uid, courseUID, lessonUID, materialUID);
     const mRef = dbRef(db, matPath);
-    
+
     get(mRef)
       .then((snap) => {
         if (!snap.exists()) {
@@ -85,7 +85,7 @@ export default function MaterialEditor({ userData }) {
     setLoading(true);
     try {
       let htmlContent = '';
-      
+
       // Always prioritize cached HTML content
       if (materialData.htmlContent) {
         htmlContent = materialData.htmlContent;
@@ -166,7 +166,7 @@ export default function MaterialEditor({ userData }) {
       setEditorData(sanitizedHtml);
 
       successModalRef.current.openModal();
-      
+
     } catch (err) {
       console.error('Save error:', err);
       alert('Error saving material: ' + err.message);
@@ -266,10 +266,10 @@ export default function MaterialEditor({ userData }) {
             <p>Your changes have been saved and the DOCX file has been updated in Firebase Storage.</p>
           </div>
           <div className="success-actions">
-            <button 
-              className="site-button" 
+            <button
+              className="site-button"
               onClick={handleSuccessModalClose}
-              style={{width: '100%'}}
+              style={{ width: '100%' }}
             >
               Continue Editing
             </button>
