@@ -1,0 +1,22 @@
+{
+  "rules": {
+    "users": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid"
+      }
+    },
+    "courses": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+    "lessons": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+    "materials": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    }
+  }
+}

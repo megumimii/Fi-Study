@@ -1,0 +1,10 @@
+.dp-layout {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    width: 100%;
+    align-items: center;
+    gap: 20px;
+    padding: 20px 30px;
+    justify-content: flex-start;
+}

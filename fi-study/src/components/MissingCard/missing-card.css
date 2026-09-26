@@ -1,0 +1,37 @@
+.missing-card {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+    border: 2px dashed #888;
+    border-radius: 10px;
+    min-width: 100%;
+    padding: 20px 20px 25px 20px;
+    background-color: #1a1a1a;
+    color: white;
+    min-height: 100%;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+.missing-card:hover {
+    filter: brightness(1.2);
+}
+
+.missing-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.plus-icon {
+    font-size: 2em;
+}
+
+.missing-card p {
+    margin: 0;
+    font-size: 1em;
+    font-weight: 500;
+}

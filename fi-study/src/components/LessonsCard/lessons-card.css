@@ -1,0 +1,140 @@
+.lesson-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 20px;
+    border-radius: 10px;
+    height: 220px;
+    background-color: #1a1a1a;
+    color: #fff;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    transition: all 0.3s ease-in-out;
+    position: relative;
+    z-index: 0;
+    border: #555 solid 1px;
+}
+
+.lesson-card:hover {
+    filter: brightness(1.2);
+    cursor: pointer;
+}
+
+.lesson-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.lesson-title {
+    font-size: 1.3em;
+    font-weight: 600;
+}
+
+.lesson-description {
+    font-size: 1em;
+    font-weight: lighter;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+}
+
+.lesson-metadata {
+    font-size: 0.9em;
+    color: rgba(255,255,255,0.5);
+    margin-top: auto;
+}
+
+.take-quiz-btn {
+    padding: 8px 15px;
+    border-radius: 5px;
+    border: none;
+    background-color: #2997e0;
+    color: white;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+.take-quiz-btn:hover {
+    background-color: #1f74b5;
+}
+
+/* Settings dropdown */
+.settings {
+    position: relative;
+    user-select: none;
+}
+
+.sett-container {
+    cursor: pointer;
+    font-size: 1.7em;
+    transition: all 0.3s ease-in-out;
+}
+
+.sett-container:hover {
+    color: rgba(255,255,255,0.5);
+}
+
+.lesson-card-settings {
+    position: absolute;
+    right: 0;
+    top: -5px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background-color: #1a1a1a;
+    color: white;
+    padding: 15px 10px;
+    z-index: 9999;
+    border-radius: 5px;
+    user-select: none;
+    border: 1px solid #555;
+}
+
+.lesson-card-settings .option {
+    padding: 5px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    font-size: 0.95em !important;
+}
+
+.lesson-card .option:nth-child(2):hover{
+    background-color: #e02929;
+}
+
+.lesson-card .option:nth-child(1):hover{
+    background-color: #2997e0;
+}
+
+.lesson-card .option:nth-child(3):hover{
+    background-color: #e07b29;
+}
+
+.lesson-card-settings .option h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+}
+
+@media screen and (max-width: 768px) {
+    .lesson-card {
+        width: 100%;
+    }
+
+    .lesson-card h3{
+        font-size: 1.1em !important;
+    }
+
+    .lesson-card p{
+        font-size: 0.9em !important;
+    }
+
+    .lesson-card .lesson-metadata{
+        font-size: 0.8em !important;
+    }
+}

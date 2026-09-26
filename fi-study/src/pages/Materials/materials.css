@@ -1,0 +1,47 @@
+#materials-container {
+  margin-top: 10px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.materials-add-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.materials-add-container button{
+    width: 150px;
+}
+
+.materials-cards-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 10px;
+  border-radius: 10px;
+  height: 100%;
+}
+
+.empty-container button{
+  height: 40px !important;
+  flex: 0;
+}
+
+#docx-label{
+  margin-top: -10px !important;
+}
+
+@media (max-width: 768px) {
+  .materials-add-container {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .materials-add-container button {
+    width: 100%;
+  }
+}

@@ -1,0 +1,31 @@
+#landing-page-footer-bar{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 120px;
+    color: white;
+    padding: 10px 30px;
+    background-color: rgb(9, 16, 41);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#landing-page-footer-bar #logo-section{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: fit-content;
+    height: 100%;
+}
+
+#landing-page-footer-bar img{
+    height: 2em;
+    margin-right: 10px;
+}
+
+#landing-page-footer-bar p{
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 0.8em;
+}

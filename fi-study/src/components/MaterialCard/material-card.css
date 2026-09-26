@@ -1,0 +1,131 @@
+.material-post-card {
+  background: #1c1c1c;
+  border-radius: 12px;
+  padding: 16px;
+  color: #fff;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border: var(--gray-border) 1px solid;
+  transition: background 0.3s ease;
+}
+
+.material-post-card:hover {
+  background: #222;
+}
+
+.post-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.post-header .status{
+  color: var(--status-color);
+  font-size: 0.8em;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.status.passed{
+  background-color: #3aac50;
+}
+
+.status.not-passed{
+  background-color: #ef4444;
+}
+
+.post-info h3 {
+  margin: 0;
+  font-size: 1.2em;
+  color: var(--accent-color);
+}
+
+.subtitle {
+  margin-top: 5px;
+  color: var(--subtitle-color);
+  font-size: 0.9em;
+}
+
+.post-file {
+  background: #2a2a2a;
+  padding: 10px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.post-file a {
+  color: #7fcfff;
+  text-decoration: none;
+}
+
+.post-actions {
+  display: flex;
+  justify-content: space-around;
+  border-top: 1px solid #333;
+  padding-top: 10px;
+}
+
+.post-actions button {
+  background: none;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 0.9em;
+  display: flex;
+  align-items: center;
+  width: 24%;
+  gap: 5px;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  transition: color 0.3s ease;
+  margin-top: 5px;
+  border-radius: 2px;
+}
+
+.post-actions button:first-child {
+  background-color: #289640;
+}
+
+.post-actions button:nth-child(3) {
+  background-color: #0c5db9;
+}
+
+.post-actions button:nth-child(2) {
+  background-color: #e07b29;
+}
+
+.post-actions button:last-child {
+  background-color: #962828;
+}
+
+.post-actions button:hover {
+  filter: brightness(1.4);
+}
+
+#docx-label-update{
+  margin-top: -10px !important;
+}
+
+@media (max-width: 768px) {
+  
+  .post-actions{
+    font-size: 0.68em !important;
+  }
+
+  .post-actions button{
+    padding: 10px 2px !important;
+  }
+
+  .status{
+    font-size: 0.68em !important;
+  }
+
+}

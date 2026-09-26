@@ -1,0 +1,122 @@
+#course-progress{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 20px 20px 25px 20px;
+    min-height: 200px;
+    max-height: fit-content;
+    border-radius: 10px;
+    background-color: #1a1a1a;
+    color: rgb(255, 255, 255);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease-in-out;
+    position: relative;
+    justify-content: space-between;
+}
+
+#course-progress .progress-container{
+    margin-top: 10px;
+    width: 100%;
+    height: 10px;
+    background-color: rgb(61, 61, 61);
+    border-radius: 5px;
+    position: relative;
+}
+
+#course-progress .progress-container .progress-bar{
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 40%;
+    background-color: #2997e0;
+    border-radius: 5px;
+}
+
+#course-progress .title-subtitle-container:first-of-type{
+    width: 90%;
+}
+
+#course-progress .title-subtitle-container:first-of-type h2, #course-progress .title-subtitle-container:first-of-type p{
+    width: 100%;
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+#lessons-container{
+    margin-top: 10px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+#lessons-container .lessons-add-container button{
+    width: 200px;
+}
+
+.lessons-add-container{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.lessons-cards-container{
+    width: 100%;
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    color: #fff;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    transition: all 0.3s ease-in-out;
+    flex-grow: 1;
+}
+
+.empty-container span{
+    text-align: center;
+    font-size: 2em;
+}
+
+.empty-container button{
+    text-align: center;
+    margin-top: 20px;
+}
+
+@media screen and (max-width: 1300px) {
+    .empty-container{
+        height: 400px;
+    }
+}
+
+@media screen and (max-width: 1100px) {
+
+    #lessons-container .lessons-add-container button{
+        font-size: 0.7em;
+    }
+
+    .lessons-container{
+        flex-grow: 0 !important;
+    }
+
+}
+
+@media (max-width: 768px) {
+    
+    .lessons-add-container{
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .lessons-add-container button{
+        width: 100% !important;
+    }
+
+}

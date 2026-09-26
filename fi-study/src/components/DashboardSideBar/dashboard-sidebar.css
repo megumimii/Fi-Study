@@ -1,0 +1,89 @@
+#dashboard-sidebar{
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+    background-color: rgb(4, 9, 27);
+    color: white;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 20px 30px;
+    flex-shrink: 0;
+    width: 300px;
+    gap: 30px;
+    position: sticky;
+    top: 0;
+    left: 0;
+}
+
+#dashboard-sidebar #dashboard-sidebar-logo-container{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100px;
+    margin-bottom: 5%;
+}
+
+#dashboard-sidebar #dashboard-sidebar-logo-container img{
+    height: 2.8em;
+    margin-right: 10px;
+}
+
+#dashboard-sidebar #dashboard-sidebar-logo-container h1{
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 1.5em;
+}
+
+#dashboard-sidebar #dashboard-sidebar-links-container{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: fit-content;
+    overflow-y: auto;
+    gap: 10px;
+}
+
+#dashboard-sidebar #dashboard-sidebar-links-container a{
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    padding: 15px 15px;
+    align-items: center;
+    gap: 20%;
+    cursor: pointer;
+    text-decoration: none;
+    color: white;
+    font-size: 1.1em;
+    font-weight: 500;
+    border-radius: 10px;
+}
+
+#dashboard-sidebar #dashboard-sidebar-links-container a.active{
+    background-color: var(--primary-color);
+}
+
+#dashboard-sidebar #dashboard-sidebar-links-container a:hover:not(.active){
+    background-color: rgb(36, 36, 36);
+}
+
+#dashboard-sidebar #dashboard-sidebar-logout-button{
+    margin-top: auto;
+    width: 100%;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgb(34, 34, 34);
+    border: 1px solid rgb(141, 141, 141);
+    border-radius: 10px;
+    gap: 10px;
+    cursor: pointer;
+    color: white;
+    font-size: 1.05em;
+}
+
+#dashboard-sidebar #dashboard-sidebar-logout-button:hover{
+    filter: brightness(2);
+}
