@@ -12,6 +12,16 @@ class UserController {
     const profile = await userService.updateProfile(req.user.uid, req.body);
     return ApiResponse.success(res, profile, 'User profile updated successfully');
   });
+
+  logStudySession = asyncHandler(async (req, res) => {
+    const session = await userService.logStudySession(req.user.uid, req.body);
+    return ApiResponse.created(res, session, 'Study session logged successfully');
+  });
+
+  logQuizAttempt = asyncHandler(async (req, res) => {
+    const attempt = await userService.logQuizAttempt(req.user.uid, req.body);
+    return ApiResponse.created(res, attempt, 'Quiz attempt logged successfully');
+  });
 }
 
 module.exports = new UserController();

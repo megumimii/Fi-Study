@@ -1,140 +1,106 @@
-.lesson-card {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 20px;
-    border-radius: 10px;
-    height: 220px;
-    background-color: #1a1a1a;
-    color: #fff;
-    box-shadow: 0 0 10px rgba(0,0,0,0.2);
-    transition: all 0.3s ease-in-out;
-    position: relative;
-    z-index: 0;
-    border: #555 solid 1px;
+.lesson-row-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 120px 110px auto;
+  align-items: center;
+  gap: 1rem;
+  padding: 13px 18px;
+  border-bottom: 1px solid var(--border-subtle);
+  cursor: pointer;
+  transition: background-color 0.14s ease;
 }
 
-.lesson-card:hover {
-    filter: brightness(1.2);
-    cursor: pointer;
+.lesson-row-item:last-child {
+  border-bottom: none;
 }
 
-.lesson-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+.lesson-row-item:hover {
+  background-color: var(--bg-surface-2);
 }
 
-.lesson-title {
-    font-size: 1.3em;
-    font-weight: 600;
+.lesson-row-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
 }
 
-.lesson-description {
-    font-size: 1em;
-    font-weight: lighter;
-    width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
+.lesson-row-accent-bar {
+  width: 3px;
+  height: 32px;
+  border-radius: 2px;
+  flex-shrink: 0;
 }
 
-.lesson-metadata {
-    font-size: 0.9em;
-    color: rgba(255,255,255,0.5);
-    margin-top: auto;
+.lesson-row-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
 }
 
-.take-quiz-btn {
-    padding: 8px 15px;
-    border-radius: 5px;
-    border: none;
-    background-color: #2997e0;
-    color: white;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease-in-out;
+.lesson-row-title-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
-.take-quiz-btn:hover {
-    background-color: #1f74b5;
+.lesson-row-title {
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* Settings dropdown */
-.settings {
-    position: relative;
-    user-select: none;
+.lesson-row-pill {
+  padding: 1px 6px;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
-.sett-container {
-    cursor: pointer;
-    font-size: 1.7em;
-    transition: all 0.3s ease-in-out;
+.lesson-row-star {
+  color: var(--accent-primary);
+  font-size: 0.78rem;
 }
 
-.sett-container:hover {
-    color: rgba(255,255,255,0.5);
+.lesson-row-desc {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.lesson-card-settings {
-    position: absolute;
-    right: 0;
-    top: -5px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    background-color: #1a1a1a;
-    color: white;
-    padding: 15px 10px;
-    z-index: 9999;
-    border-radius: 5px;
-    user-select: none;
-    border: 1px solid #555;
+.lesson-row-metric,
+.lesson-row-date {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-align: right;
 }
 
-.lesson-card-settings .option {
-    padding: 5px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: all 0.3s ease-in-out;
-    font-size: 0.95em !important;
+.lesson-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
-.lesson-card .option:nth-child(2):hover{
-    background-color: #e02929;
-}
+@media (max-width: 768px) {
+  .lesson-row-item {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
 
-.lesson-card .option:nth-child(1):hover{
-    background-color: #2997e0;
-}
-
-.lesson-card .option:nth-child(3):hover{
-    background-color: #e07b29;
-}
-
-.lesson-card-settings .option h3 {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin: 0;
-}
-
-@media screen and (max-width: 768px) {
-    .lesson-card {
-        width: 100%;
-    }
-
-    .lesson-card h3{
-        font-size: 1.1em !important;
-    }
-
-    .lesson-card p{
-        font-size: 0.9em !important;
-    }
-
-    .lesson-card .lesson-metadata{
-        font-size: 0.8em !important;
-    }
+  .lesson-row-metric,
+  .lesson-row-date {
+    display: none;
+  }
 }

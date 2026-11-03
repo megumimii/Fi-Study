@@ -1,0 +1,130 @@
+.tactical-dropzone-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tactical-dropzone-label {
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+}
+
+.tactical-dropzone {
+  width: 100%;
+  padding: 16px;
+  background-color: var(--bg-input);
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: border-color 0.18s ease, background-color 0.18s ease;
+}
+
+.tactical-dropzone:hover:not(.disabled),
+.tactical-dropzone.dragging {
+  border-color: var(--accent-primary);
+  background-color: var(--accent-subtle);
+}
+
+.tactical-dropzone.has-file {
+  border-style: solid;
+  border-color: var(--accent-border);
+  background-color: var(--bg-elevated);
+}
+
+.tactical-dropzone.has-error {
+  border-color: var(--status-danger);
+  background-color: var(--status-danger-bg);
+}
+
+.tactical-dropzone.disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.dropzone-prompt {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dropzone-prompt .upload-icon {
+  font-size: 1.8rem;
+  color: var(--accent-primary);
+}
+
+.dropzone-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: left;
+}
+
+.dropzone-text strong {
+  font-size: 0.88rem;
+  color: var(--text-primary);
+}
+
+.dropzone-text span {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+}
+
+.dropzone-selected-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.dropzone-selected-info .file-icon {
+  font-size: 1.7rem;
+  color: var(--status-passed);
+}
+
+.dropzone-file-meta {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  text-align: left;
+}
+
+.dropzone-filename {
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dropzone-filesize {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--text-secondary);
+}
+
+.dropzone-remove-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-xs);
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.dropzone-remove-btn:hover {
+  border-color: var(--status-danger);
+  color: var(--status-danger);
+}
+

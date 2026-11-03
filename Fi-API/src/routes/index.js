@@ -6,6 +6,7 @@ const lessonRoutes = require('./lesson.routes');
 const materialRoutes = require('./material.routes');
 const userRoutes = require('./user.routes');
 const quizRoutes = require('./quiz.routes');
+const flashcardRoutes = require('./flashcard.routes');
 
 // Health check
 router.get('/health', (req, res) => {
@@ -22,5 +23,6 @@ router.use('/courses/:courseUID/lessons', lessonRoutes);
 router.use('/courses/:courseUID/lessons/:lessonUID/materials', materialRoutes);
 router.use('/users', userRoutes);
 router.use('/quiz', quizRoutes);
+router.use('/flashcards', flashcardRoutes);
 
 module.exports = router;

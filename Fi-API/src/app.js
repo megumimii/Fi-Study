@@ -8,10 +8,24 @@ const { notFoundHandler, errorHandler } = require('./middlewares/error.middlewar
 
 const app = express();
 
+// Disable X-Powered-By header
+app.disable('x-powered-by');
+
+// Security headers middleware
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  next();
+});
+
 // Allowed origins
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:5174',
+  'http://127.0.0.1:5173',
   'https://fi-study-4e3ea.web.app',
   'https://fi-study-4e3ea.firebaseapp.com'
 ];
@@ -43,6 +57,15 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // Logging Middlewares
 app.use(requestLogger);
 app.use(cudAuditLogger);
+
+// Root health check endpoint
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    service: 'Fi-API'
+  });
+});
 
 // API Routes
 app.use('/api', routes);

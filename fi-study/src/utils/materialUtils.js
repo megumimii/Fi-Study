@@ -1,31 +1,36 @@
 import mammoth from 'mammoth';
-import { Document, Paragraph, TextRun, AlignmentType, Packer, HeadingLevel, Table, TableRow, TableCell, WidthType, UnderlineType } from 'docx';
+import {
+  convertHtmlToDocxBlob,
+  resolveMaterialHtml,
+  exportAndDownloadMaterial
+} from '../services/documentExporter';
+import { parseUploadedStudyFile } from '../services/documentParser';
+import { getFileExtension } from '../services/fileValidator';
 
-export function extractTextFromHtml(htmlContent) {
+export function extractTextFromHtml(htmlContent = '') {
   const tempDiv = document.createElement('div');
   tempDiv.innerHTML = htmlContent;
-  return tempDiv.innerText;
+  return (tempDiv.innerText || tempDiv.textContent || '').trim();
 }
 
 export async function fetchAndConvertDocxToHtml(fileURL) {
-  const cacheBuster = `?t=${Date.now()}`;
-  const response = await fetch(fileURL + cacheBuster);
-  if (!response.ok) throw new Error('Failed to fetch DOCX file');
+  const separator = fileURL.includes('?') ? '&' : '?';
+  const response = await fetch(`${fileURL}${separator}t=${Date.now()}`);
+  if (!response.ok) throw new Error('Failed to fetch DOCX file from storage');
   const arrayBuffer = await response.arrayBuffer();
   const result = await mammoth.convertToHtml({ arrayBuffer });
   return result.value;
 }
 
-export async function convertDocxToHtml(docxFile) {
-  const arrayBuffer = await docxFile.arrayBuffer();
-  const result = await mammoth.convertToHtml({ arrayBuffer });
-  return result.value;
+export async function convertDocxToHtml(file) {
+  const parsed = await parseUploadedStudyFile(file);
+  return parsed.htmlContent;
 }
 
 export async function fetchAndExtractDocxText(fileURL) {
-  const cacheBuster = `?t=${Date.now()}`;
-  const response = await fetch(fileURL + cacheBuster);
-  if (!response.ok) throw new Error('Failed to fetch DOCX file');
+  const separator = fileURL.includes('?') ? '&' : '?';
+  const response = await fetch(`${fileURL}${separator}t=${Date.now()}`);
+  if (!response.ok) throw new Error('Failed to fetch DOCX file from storage');
   const arrayBuffer = await response.arrayBuffer();
   const result = await mammoth.extractRawText({ arrayBuffer });
   return result.value;
@@ -34,8 +39,9 @@ export async function fetchAndExtractDocxText(fileURL) {
 export async function extractMaterialText(material) {
   if (!material) return '';
 
-  if (material.htmlContent) {
-    return extractTextFromHtml(material.htmlContent);
+  if (material.htmlContent && material.htmlContent.trim()) {
+    const extracted = extractTextFromHtml(material.htmlContent);
+    if (extracted) return extracted;
   }
 
   if (material.fileURL) {
@@ -50,199 +56,28 @@ export async function extractMaterialText(material) {
   return material.description || '';
 }
 
+/**
+ * Storage path always stores the canonical .docx representation in Firebase Storage,
+ * while material.fileName and material.originalExtension retain the user's original extension.
+ */
 export function constructMaterialStoragePath(userUID, courseUID, lessonUID, material) {
-  let filename = material.fileName || material.title.split(' ')[0].toLowerCase() + '.docx';
-  return `materials/${userUID}/${courseUID}/${lessonUID}/${material.uid}-${filename}`;
+  const rawName = material?.fileName || (material?.title || 'material').split(' ')[0].toLowerCase();
+  const baseName = rawName.replace(/\.(docx|pdf|txt|md)$/i, '');
+  return `materials/${userUID}/${courseUID}/${lessonUID}/${material.uid}-${baseName}.docx`;
 }
 
 export function constructMaterialDbPath(userUID, courseUID, lessonUID, materialUID) {
   return `courses/${userUID}/${courseUID}/Lessons/${lessonUID}/Materials/${materialUID}`;
 }
 
-export async function convertHtmlToDocx(htmlContent) {
-  try {
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = htmlContent;
-
-    const children = [];
-
-    // Parse HTML elements and convert to docx elements
-    const parseNode = (node) => {
-      const nodeName = node.nodeName.toLowerCase();
-
-      // Handle headings
-      if (nodeName.match(/^h[1-6]$/)) {
-        const level = parseInt(nodeName.charAt(1));
-        const runs = parseTextContent(node);
-        return new Paragraph({
-          children: runs,
-          heading: level === 1 ? HeadingLevel.HEADING_1 :
-            level === 2 ? HeadingLevel.HEADING_2 :
-              level === 3 ? HeadingLevel.HEADING_3 :
-                level === 4 ? HeadingLevel.HEADING_4 :
-                  level === 5 ? HeadingLevel.HEADING_5 :
-                    HeadingLevel.HEADING_6,
-        });
-      }
-
-      // Handle paragraphs
-      if (nodeName === 'p') {
-        const runs = parseTextContent(node);
-        const alignment = getAlignment(node);
-        return new Paragraph({
-          children: runs.length > 0 ? runs : [new TextRun('')],
-          alignment: alignment,
-        });
-      }
-
-      // Handle lists
-      if (nodeName === 'li') {
-        const runs = parseTextContent(node);
-        return new Paragraph({
-          children: runs.length > 0 ? runs : [new TextRun('')],
-          bullet: { level: 0 },
-        });
-      }
-
-      // Handle blockquotes
-      if (nodeName === 'blockquote') {
-        const runs = parseTextContent(node);
-        return new Paragraph({
-          children: runs.length > 0 ? runs : [new TextRun('')],
-          italics: true,
-          indent: { left: 720 }, // 0.5 inch
-        });
-      }
-
-      // Handle tables
-      if (nodeName === 'table') {
-        return parseTable(node);
-      }
-
-      return null;
-    };
-
-    // Parse text content with formatting
-    const parseTextContent = (element) => {
-      const runs = [];
-
-      const traverse = (node, inherited = {}) => {
-        if (node.nodeType === Node.TEXT_NODE) {
-          const text = node.textContent;
-          if (text.trim()) {
-            runs.push(new TextRun({
-              text: text,
-              bold: inherited.bold || false,
-              italics: inherited.italics || false,
-              underline: inherited.underline ? { type: UnderlineType.SINGLE } : undefined,
-            }));
-          }
-        } else if (node.nodeType === Node.ELEMENT_NODE) {
-          const nodeName = node.nodeName.toLowerCase();
-          const newInherited = { ...inherited };
-
-          if (nodeName === 'strong' || nodeName === 'b') newInherited.bold = true;
-          if (nodeName === 'em' || nodeName === 'i') newInherited.italics = true;
-          if (nodeName === 'u') newInherited.underline = true;
-
-          Array.from(node.childNodes).forEach(child => traverse(child, newInherited));
-        }
-      };
-
-      traverse(element);
-      return runs;
-    };
-
-    // Get alignment from style
-    const getAlignment = (element) => {
-      const align = element.style.textAlign ||
-        element.getAttribute('align') ||
-        window.getComputedStyle(element).textAlign;
-
-      if (align === 'center') return AlignmentType.CENTER;
-      if (align === 'right') return AlignmentType.RIGHT;
-      if (align === 'justify') return AlignmentType.JUSTIFIED;
-      return AlignmentType.LEFT;
-    };
-
-    // Parse table
-    const parseTable = (tableElement) => {
-      const rows = [];
-      const tableRows = tableElement.querySelectorAll('tr');
-
-      tableRows.forEach(tr => {
-        const cells = [];
-        const tableCells = tr.querySelectorAll('td, th');
-
-        tableCells.forEach(cell => {
-          const runs = parseTextContent(cell);
-          cells.push(new TableCell({
-            children: [new Paragraph({
-              children: runs.length > 0 ? runs : [new TextRun('')],
-            })],
-            width: { size: 100 / tableCells.length, type: WidthType.PERCENTAGE },
-          }));
-        });
-
-        rows.push(new TableRow({ children: cells }));
-      });
-
-      return new Table({
-        rows: rows,
-        width: { size: 100, type: WidthType.PERCENTAGE },
-      });
-    };
-
-    // Process all child nodes
-    const processChildren = (parent) => {
-      Array.from(parent.children).forEach(child => {
-        if (child.nodeName.toLowerCase() === 'ul' || child.nodeName.toLowerCase() === 'ol') {
-          // Process list items
-          Array.from(child.children).forEach(li => {
-            const element = parseNode(li);
-            if (element) children.push(element);
-          });
-        } else {
-          const element = parseNode(child);
-          if (element) {
-            children.push(element);
-          } else if (child.children.length > 0) {
-            processChildren(child);
-          }
-        }
-      });
-    };
-
-    processChildren(tempDiv);
-
-    // If no content was parsed, add a blank paragraph
-    if (children.length === 0) {
-      children.push(new Paragraph({ children: [new TextRun('')] }));
-    }
-
-    // Create document
-    const doc = new Document({
-      sections: [{
-        properties: {
-          page: {
-            margin: {
-              top: 720,
-              right: 720,
-              bottom: 720,
-              left: 720,
-            },
-          },
-        },
-        children: children,
-      }],
-    });
-
-    // Convert to blob
-    const blob = await Packer.toBlob(doc);
-    return blob;
-
-  } catch (error) {
-    console.error('Error converting HTML to DOCX:', error);
-    throw new Error('Failed to convert content to DOCX format');
-  }
+export function getMaterialOriginalExtension(material) {
+  if (material?.originalExtension) return material.originalExtension.toLowerCase();
+  const extFromName = getFileExtension(material?.fileName || '');
+  return extFromName || 'docx';
 }
+
+export async function convertHtmlToDocx(htmlContent) {
+  return convertHtmlToDocxBlob(htmlContent);
+}
+
+export { resolveMaterialHtml, exportAndDownloadMaterial };

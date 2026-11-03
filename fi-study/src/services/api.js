@@ -26,7 +26,6 @@ async function apiRequest(endpoint, options = {}) {
     headers
   });
 
-  // Handle 204 No Content
   if (response.status === 204) {
     return null;
   }
@@ -48,64 +47,87 @@ async function apiRequest(endpoint, options = {}) {
 export const courseApi = {
   getAll: () => apiRequest('/courses'),
   getById: (courseUID) => apiRequest(`/courses/${courseUID}`),
-  create: (data) => apiRequest('/courses', {
-    method: 'POST',
-    body: JSON.stringify(data)
-  }),
-  update: (courseUID, data) => apiRequest(`/courses/${courseUID}`, {
-    method: 'PUT',
-    body: JSON.stringify(data)
-  }),
-  delete: (courseUID) => apiRequest(`/courses/${courseUID}`, {
-    method: 'DELETE'
-  })
+  create: (data) =>
+    apiRequest('/courses', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    }),
+  update: (courseUID, data) =>
+    apiRequest(`/courses/${courseUID}`, {
+      method: 'PUT',
+      body: JSON.stringify(data)
+    }),
+  delete: (courseUID) =>
+    apiRequest(`/courses/${courseUID}`, {
+      method: 'DELETE'
+    })
 };
 
 // Lesson API
 export const lessonApi = {
   getAll: (courseUID) => apiRequest(`/courses/${courseUID}/lessons`),
   getById: (courseUID, lessonUID) => apiRequest(`/courses/${courseUID}/lessons/${lessonUID}`),
-  create: (courseUID, data) => apiRequest(`/courses/${courseUID}/lessons`, {
-    method: 'POST',
-    body: JSON.stringify(data)
-  }),
-  update: (courseUID, lessonUID, data) => apiRequest(`/courses/${courseUID}/lessons/${lessonUID}`, {
-    method: 'PUT',
-    body: JSON.stringify(data)
-  }),
-  delete: (courseUID, lessonUID) => apiRequest(`/courses/${courseUID}/lessons/${lessonUID}`, {
-    method: 'DELETE'
-  })
+  create: (courseUID, data) =>
+    apiRequest(`/courses/${courseUID}/lessons`, {
+      method: 'POST',
+      body: JSON.stringify(data)
+    }),
+  update: (courseUID, lessonUID, data) =>
+    apiRequest(`/courses/${courseUID}/lessons/${lessonUID}`, {
+      method: 'PUT',
+      body: JSON.stringify(data)
+    }),
+  delete: (courseUID, lessonUID) =>
+    apiRequest(`/courses/${courseUID}/lessons/${lessonUID}`, {
+      method: 'DELETE'
+    })
 };
 
 // Material API
 export const materialApi = {
-  getAll: (courseUID, lessonUID) => apiRequest(`/courses/${courseUID}/lessons/${lessonUID}/materials`),
-  getById: (courseUID, lessonUID, materialUID) => apiRequest(`/courses/${courseUID}/lessons/${lessonUID}/materials/${materialUID}`),
-  create: (courseUID, lessonUID, data) => apiRequest(`/courses/${courseUID}/lessons/${lessonUID}/materials`, {
-    method: 'POST',
-    body: JSON.stringify(data)
-  }),
-  update: (courseUID, lessonUID, materialUID, data) => apiRequest(`/courses/${courseUID}/lessons/${lessonUID}/materials/${materialUID}`, {
-    method: 'PUT',
-    body: JSON.stringify(data)
-  }),
-  updateProgress: (courseUID, lessonUID, materialUID, passed = true) => apiRequest(`/courses/${courseUID}/lessons/${lessonUID}/materials/${materialUID}/progress`, {
-    method: 'PATCH',
-    body: JSON.stringify({ passed })
-  }),
-  delete: (courseUID, lessonUID, materialUID) => apiRequest(`/courses/${courseUID}/lessons/${lessonUID}/materials/${materialUID}`, {
-    method: 'DELETE'
-  })
+  getAll: (courseUID, lessonUID) =>
+    apiRequest(`/courses/${courseUID}/lessons/${lessonUID}/materials`),
+  getById: (courseUID, lessonUID, materialUID) =>
+    apiRequest(`/courses/${courseUID}/lessons/${lessonUID}/materials/${materialUID}`),
+  create: (courseUID, lessonUID, data) =>
+    apiRequest(`/courses/${courseUID}/lessons/${lessonUID}/materials`, {
+      method: 'POST',
+      body: JSON.stringify(data)
+    }),
+  update: (courseUID, lessonUID, materialUID, data) =>
+    apiRequest(`/courses/${courseUID}/lessons/${lessonUID}/materials/${materialUID}`, {
+      method: 'PUT',
+      body: JSON.stringify(data)
+    }),
+  updateProgress: (courseUID, lessonUID, materialUID, passed = true) =>
+    apiRequest(`/courses/${courseUID}/lessons/${lessonUID}/materials/${materialUID}/progress`, {
+      method: 'PATCH',
+      body: JSON.stringify({ passed })
+    }),
+  delete: (courseUID, lessonUID, materialUID) =>
+    apiRequest(`/courses/${courseUID}/lessons/${lessonUID}/materials/${materialUID}`, {
+      method: 'DELETE'
+    })
 };
 
-// User Profile API
+// User Profile & Telemetry API
 export const userApi = {
   getProfile: () => apiRequest('/users/profile'),
-  updateProfile: (data) => apiRequest('/users/profile', {
-    method: 'PUT',
-    body: JSON.stringify(data)
-  })
+  updateProfile: (data) =>
+    apiRequest('/users/profile', {
+      method: 'PUT',
+      body: JSON.stringify(data)
+    }),
+  logStudySession: (data) =>
+    apiRequest('/users/study-sessions', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    }),
+  logQuizAttempt: (data) =>
+    apiRequest('/users/quiz-attempts', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    })
 };
 
 // Quiz AI API
@@ -116,5 +138,16 @@ export const quizApi = {
       body: JSON.stringify({ materialText })
     });
     return res?.quiz || res;
+  }
+};
+
+// Flashcard AI API
+export const flashcardApi = {
+  generateFlashcards: async (materialText, count = 10, forceRegenerate = false) => {
+    const res = await apiRequest('/flashcards/generate', {
+      method: 'POST',
+      body: JSON.stringify({ materialText, count, forceRegenerate })
+    });
+    return res?.flashcards || res;
   }
 };

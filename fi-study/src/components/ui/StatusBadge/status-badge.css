@@ -1,0 +1,45 @@
+.tactical-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px;
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-radius: 4px;
+  border: 1px solid var(--border-subtle);
+  background-color: var(--bg-surface-2);
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.tactical-status-badge .badge-icon {
+  font-size: 0.82rem;
+}
+
+.tactical-status-badge.variant-passed,
+.tactical-status-badge.variant-success {
+  background-color: rgba(16, 185, 129, 0.12);
+  border-color: rgba(16, 185, 129, 0.28);
+  color: #34d399;
+}
+
+.tactical-status-badge.variant-pending {
+  background-color: rgba(245, 158, 11, 0.11);
+  border-color: rgba(245, 158, 11, 0.25);
+  color: #fbbf24;
+}
+
+.tactical-status-badge.variant-accent {
+  background-color: rgba(59, 130, 246, 0.14);
+  border-color: rgba(59, 130, 246, 0.28);
+  color: #60a5fa;
+}
+
+.tactical-status-badge.variant-contrast {
+  background-color: var(--accent-primary-dim);
+  border-color: var(--border-accent);
+  color: var(--accent-primary);
+}

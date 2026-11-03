@@ -1,0 +1,231 @@
+.pomodoro-bottom-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background-color: var(--bg-surface-1);
+  border-top: 1px solid var(--border-subtle);
+  z-index: 850;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(12px);
+}
+
+/* Hairline Progress Strip across the top */
+.bottom-bar-progress-track {
+  width: 100%;
+  height: 2px;
+  background-color: rgba(255, 255, 255, 0.06);
+  position: relative;
+}
+
+.bottom-bar-progress-fill {
+  height: 100%;
+  background-color: var(--accent-primary);
+  transition: width 0.3s ease;
+}
+
+.bottom-bar-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  gap: 16px;
+}
+
+/* Left zone */
+.bottom-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 220px;
+}
+
+.bottom-bar-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--text-muted);
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.bottom-bar-status-dot.is-active {
+  background-color: var(--accent-primary);
+  box-shadow: 0 0 8px var(--accent-primary-glow);
+}
+
+.bottom-bar-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.bottom-bar-title {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.bottom-bar-subtitle {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+/* Center zone */
+.bottom-bar-center {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.bottom-bar-modes {
+  display: flex;
+  background-color: var(--bg-surface-2);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 2px;
+  gap: 2px;
+}
+
+.bottom-bar-mode-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.bottom-bar-mode-btn:hover {
+  color: var(--text-primary);
+}
+
+.bottom-bar-mode-btn.active {
+  background-color: var(--bg-surface-3);
+  color: var(--accent-bright);
+  font-weight: 600;
+}
+
+.bottom-bar-playback {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.bottom-bar-tool-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border-radius: 50%;
+  transition: all 0.15s ease;
+}
+
+.bottom-bar-tool-btn:hover {
+  color: var(--text-primary);
+  background-color: var(--bg-surface-2);
+}
+
+.bottom-bar-tool-btn .material-symbols-outlined {
+  font-size: 1.15rem;
+}
+
+.bottom-bar-play-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background-color: var(--accent-primary);
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.1s ease, background-color 0.15s ease;
+}
+
+.bottom-bar-play-btn:hover {
+  background-color: var(--accent-bright);
+  transform: scale(1.05);
+}
+
+.bottom-bar-play-btn .material-symbols-outlined {
+  font-size: 1.25rem;
+}
+
+.bottom-bar-countdown {
+  font-family: var(--font-mono);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  min-width: 50px;
+  letter-spacing: -0.02em;
+}
+
+/* Right zone */
+.bottom-bar-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 220px;
+}
+
+.bottom-bar-log-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background-color: var(--accent-primary-dim);
+  border: 1px solid var(--border-accent);
+  color: var(--accent-bright);
+  font-size: 0.74rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.bottom-bar-log-btn:hover {
+  background-color: var(--accent-primary);
+  color: #ffffff;
+}
+
+.bottom-bar-log-btn .material-symbols-outlined {
+  font-size: 0.95rem;
+}
+
+@media (max-width: 900px) {
+  .bottom-bar-left,
+  .bottom-bar-right {
+    min-width: auto;
+  }
+
+  .bottom-bar-subtitle {
+    display: none;
+  }
+
+  .bottom-bar-content {
+    padding: 0 14px;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 600px) {
+  .bottom-bar-modes {
+    display: none;
+  }
+}
+

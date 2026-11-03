@@ -1,37 +1,42 @@
 .missing-card {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 200px;
-    border: 2px dashed #888;
-    border-radius: 10px;
-    min-width: 100%;
-    padding: 20px 20px 25px 20px;
-    background-color: #1a1a1a;
-    color: white;
-    min-height: 100%;
-    cursor: pointer;
-    transition: all 0.3s ease-in-out;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-xs);
+  width: 100%;
+  padding: 24px;
+  background-color: var(--bg-void);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: border-color 0.18s ease, background-color 0.18s ease, color 0.18s ease;
 }
 
 .missing-card:hover {
-    filter: brightness(1.2);
+  border-color: var(--accent-primary);
+  background-color: var(--accent-subtle);
+  color: var(--text-primary);
 }
 
 .missing-content {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
 }
 
 .plus-icon {
-    font-size: 2em;
+  font-size: 2rem;
+  color: var(--accent-primary);
 }
 
 .missing-card p {
-    margin: 0;
-    font-size: 1em;
-    font-weight: 500;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }

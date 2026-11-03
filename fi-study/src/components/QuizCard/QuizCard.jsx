@@ -1,66 +1,103 @@
-import './quiz-card.css';
-import { useState } from 'react';
+import "./quiz-card.css";
+import { useState } from "react";
+
+const OPTION_LABELS = ["A", "B", "C", "D", "E", "F"];
 
 export default function QuizCard({
   question,
   choices,
   correctAnswer,
   explanation,
-  selected, //tracks the selected answer
+  selected,
   onSelect,
   onSubmit,
-  number
+  number,
 }) {
-
   const [revealed, setRevealed] = useState(false);
-  const success = selected === correctAnswer;//if the user selected the correct answer
+  const success = selected === correctAnswer;
 
-  function handleChoice(choice) {//choice param so that we can check what the user selected on the parent
-    if (revealed) return; //already revealed dont do anything
-    onSelect(choice);//callBack function, choice params so that the parent can know what the user selected
+  function handleChoice(choice) {
+    if (revealed) return;
+    onSelect(choice);
   }
 
   function reveal() {
     setRevealed(true);
-    onSubmit();//callBack function, determine what will happen
+    onSubmit();
   }
 
   return (
-    <div className={`quiz-card ${revealed ? (success ? 'correct' : 'incorrect') : ''}`}>
-      <h3 className="quiz-question">{number}. {question}</h3>
+    <div
+      className={`quiz-card ${
+        revealed ? (success ? "correct" : "incorrect") : ""
+      }`}
+    >
+      <div className="quiz-card-top">
+        <span className="quiz-question-index">
+          Q.{String(number).padStart(2, "0")}
+        </span>
+        {revealed && (
+          <span
+            className={`quiz-verdict-badge ${
+              success ? "is-correct" : "is-incorrect"
+            }`}
+          >
+            <span className="material-symbols-outlined">
+              {success ? "check_circle" : "cancel"}
+            </span>
+            {success ? "CORRECT" : "INCORRECT"}
+          </span>
+        )}
+      </div>
 
-      {/*Render the choices*/}
+      <h3 className="quiz-question">{question}</h3>
+
       <div className="quiz-choices">
-        {choices.map((c, i) => { //Map through the choices
-          let className = ''; //Used later to style the choice button if right or wrong
-          if (revealed) { //if the question is revealed (User clicked submit)
-            if (c === correctAnswer) className = 'right';
-            else if (c === selected) className = 'wrong';
-          } else if (selected === c) {//If the selected is the same as the one clicked on the parent
-            className = 'selected';
+        {choices.map((c, i) => {
+          let className = "";
+          if (revealed) {
+            if (c === correctAnswer) className = "right";
+            else if (c === selected) className = "wrong";
+          } else if (selected === c) {
+            className = "selected";
           }
           return (
             <button
               key={i}
-              className={`choice-btn ${className}`}//style the button
-              onClick={() => {handleChoice(c)}}//callBack, give the parent the choice through the params
+              type="button"
+              className={`choice-btn ${className}`}
+              onClick={() => handleChoice(c)}
+              disabled={revealed}
             >
-              {c}
+              <span className="choice-key">
+                {OPTION_LABELS[i] || i + 1}
+              </span>
+              <span className="choice-text">{c}</span>
             </button>
           );
         })}
       </div>
 
-      {selected && !revealed && ( //If the user has selected an answer and the question is not revealed
-        <button className="reveal-btn" onClick={()=>{reveal()}}>
-          Check Answer
+      {selected && !revealed && (
+        <button
+          type="button"
+          className="site-button reveal-btn"
+          onClick={reveal}
+        >
+          <span className="material-symbols-outlined">fact_check</span>
+          Verify Answer
         </button>
       )}
 
-      {revealed && ( //If the question is revealed
-        <div className="explanation">
-          <strong>{success ? '✅ CORRECT!' : '❌ INCORRECT.'}</strong>
-          <p>Explanation: {explanation}</p>
+      {revealed && (
+        <div className={`explanation ${success ? "is-correct" : "is-incorrect"}`}>
+          <div className="explanation-header">
+            <span className="material-symbols-outlined">
+              {success ? "check_circle" : "cancel"}
+            </span>
+            <strong>{success ? "VERIFIED CORRECT" : "INCORRECT RESPONSE"}</strong>
+          </div>
+          <p>{explanation}</p>
         </div>
       )}
     </div>

@@ -2,6 +2,11 @@ const { db, auth } = require('../config/firebase');
 const { userCache } = require('./cacheService');
 const { sanitizeInput } = require('../utils/sanitize');
 const ApiError = require('../utils/apiError');
+const crypto = require('crypto');
+
+function generateId() {
+  return crypto.randomBytes(8).toString('hex');
+}
 
 class UserService {
   /**
@@ -43,7 +48,7 @@ class UserService {
       firstName,
       lastName,
       email,
-      profilePicture: tokenUser.picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(firstName)}+${encodeURIComponent(lastName)}&background=0D8ABC&color=fff&size=512`,
+      profilePicture: tokenUser.picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(firstName)}+${encodeURIComponent(lastName)}&background=10141e&color=4A8BDF&size=512`,
       createdAt: new Date().toISOString()
     };
 
@@ -81,13 +86,73 @@ class UserService {
       });
     }
 
-    // Invalidate cache
     userCache.delete(userUid);
 
     const updatedSnap = await userRef.once('value');
     const updatedData = { uid: userUid, ...updatedSnap.val() };
     userCache.set(userUid, updatedData, 300000);
     return updatedData;
+  }
+
+  /**
+   * Log a completed Pomodoro / focus study session
+   */
+  async logStudySession(userUid, data) {
+    const durationMinutes = Number(data.durationMinutes);
+    if (!Number.isFinite(durationMinutes) || durationMinutes <= 0 || durationMinutes > 360) {
+      throw ApiError.badRequest('Valid durationMinutes (1 to 360) is required');
+    }
+
+    const sessionId = generateId();
+    const completedAt = data.completedAt || new Date().toISOString();
+    const dateKey = completedAt.slice(0, 10); // YYYY-MM-DD
+
+    const sessionRecord = {
+      id: sessionId,
+      durationMinutes: Math.round(durationMinutes * 10) / 10,
+      courseUID: data.courseUID ? String(data.courseUID) : null,
+      courseTitle: data.courseTitle ? sanitizeInput(String(data.courseTitle)) : 'General Study',
+      completedAt,
+      dateKey
+    };
+
+    await db.ref(`users/${userUid}/studySessions/${sessionId}`).set(sessionRecord);
+    userCache.delete(userUid);
+
+    return sessionRecord;
+  }
+
+  /**
+   * Log a completed quiz attempt for real dashboard telemetry
+   */
+  async logQuizAttempt(userUid, data) {
+    const score = Number(data.score);
+    const total = Number(data.total);
+    if (!Number.isFinite(score) || !Number.isFinite(total) || total <= 0) {
+      throw ApiError.badRequest('Valid quiz score and total are required');
+    }
+
+    const attemptId = generateId();
+    const percentage = Math.round((score / total) * 1000) / 10;
+    const completedAt = new Date().toISOString();
+
+    const attemptRecord = {
+      id: attemptId,
+      score,
+      total,
+      percentage,
+      passed: Boolean(data.passed),
+      materialUID: data.materialUID ? String(data.materialUID) : null,
+      materialTitle: data.materialTitle ? sanitizeInput(String(data.materialTitle)) : 'Quiz',
+      courseUID: data.courseUID ? String(data.courseUID) : null,
+      courseTitle: data.courseTitle ? sanitizeInput(String(data.courseTitle)) : null,
+      completedAt
+    };
+
+    await db.ref(`users/${userUid}/quizHistory/${attemptId}`).set(attemptRecord);
+    userCache.delete(userUid);
+
+    return attemptRecord;
   }
 }
 

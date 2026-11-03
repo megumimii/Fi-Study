@@ -9,5 +9,7 @@ router.use(apiRateLimiter);
 
 router.get('/profile', userController.getProfile);
 router.put('/profile', userController.updateProfile);
+router.post('/study-sessions', userController.logStudySession);
+router.post('/quiz-attempts', userController.logQuizAttempt);
 
 module.exports = router;

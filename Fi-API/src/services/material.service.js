@@ -14,11 +14,13 @@ class MaterialService {
    */
   async recalculateProgress(userUid, courseUid, lessonUid) {
     const lessonRef = db.ref(`courses/${userUid}/${courseUid}/Lessons/${lessonUid}`);
-    const materialsSnap = await db.ref(`courses/${userUid}/${courseUid}/Lessons/${lessonUid}/Materials`).once('value');
+    const materialsSnap = await db
+      .ref(`courses/${userUid}/${courseUid}/Lessons/${lessonUid}/Materials`)
+      .once('value');
 
     const materials = materialsSnap.exists() ? Object.values(materialsSnap.val()) : [];
     const totalMaterials = materials.length;
-    const completedMaterials = materials.filter(m => m.passed === true).length;
+    const completedMaterials = materials.filter((m) => m.passed === true).length;
     const isLessonComplete = totalMaterials > 0 && completedMaterials === totalMaterials;
 
     await lessonRef.update({
@@ -34,7 +36,7 @@ class MaterialService {
     if (lessonsSnap.exists()) {
       const lessons = Object.values(lessonsSnap.val());
       const totalLessons = lessons.length;
-      const completedLessons = lessons.filter(l => l.complete === true).length;
+      const completedLessons = lessons.filter((l) => l.complete === true).length;
       const isCourseComplete = totalLessons > 0 && completedLessons === totalLessons;
 
       await courseRef.update({
@@ -51,7 +53,9 @@ class MaterialService {
    * Get all materials for a lesson
    */
   async getMaterials(userUid, courseUid, lessonUid) {
-    const snapshot = await db.ref(`courses/${userUid}/${courseUid}/Lessons/${lessonUid}/Materials`).once('value');
+    const snapshot = await db
+      .ref(`courses/${userUid}/${courseUid}/Lessons/${lessonUid}/Materials`)
+      .once('value');
     if (!snapshot.exists()) {
       return [];
     }
@@ -62,7 +66,9 @@ class MaterialService {
    * Get a single material
    */
   async getMaterialById(userUid, courseUid, lessonUid, materialUid) {
-    const snapshot = await db.ref(`courses/${userUid}/${courseUid}/Lessons/${lessonUid}/Materials/${materialUid}`).once('value');
+    const snapshot = await db
+      .ref(`courses/${userUid}/${courseUid}/Lessons/${lessonUid}/Materials/${materialUid}`)
+      .once('value');
     if (!snapshot.exists()) {
       throw ApiError.notFound('Material not found');
     }
@@ -73,7 +79,7 @@ class MaterialService {
    * Create a new material
    */
   async createMaterial(userUid, courseUid, lessonUid, data) {
-    const { title, description, fileURL, fileName } = data;
+    const { title, description, fileURL, fileName, originalExtension, htmlContent } = data;
     if (!title || !description) {
       throw ApiError.badRequest('Title and description are required');
     }
@@ -88,11 +94,16 @@ class MaterialService {
       description: sanitizedDescription,
       fileURL: fileURL || null,
       fileName: fileName || null,
+      originalExtension: originalExtension || 'docx',
+      htmlContent: htmlContent || `<p>${sanitizedDescription}</p>`,
+      flashcards: [],
       passed: false,
       createdAt: new Date().toISOString()
     };
 
-    await db.ref(`courses/${userUid}/${courseUid}/Lessons/${lessonUid}/Materials/${uid}`).set(materialData);
+    await db
+      .ref(`courses/${userUid}/${courseUid}/Lessons/${lessonUid}/Materials/${uid}`)
+      .set(materialData);
     await this.recalculateProgress(userUid, courseUid, lessonUid);
 
     return materialData;
@@ -102,7 +113,9 @@ class MaterialService {
    * Update an existing material
    */
   async updateMaterial(userUid, courseUid, lessonUid, materialUid, data) {
-    const matRef = db.ref(`courses/${userUid}/${courseUid}/Lessons/${lessonUid}/Materials/${materialUid}`);
+    const matRef = db.ref(
+      `courses/${userUid}/${courseUid}/Lessons/${lessonUid}/Materials/${materialUid}`
+    );
     const snapshot = await matRef.once('value');
     if (!snapshot.exists()) {
       throw ApiError.notFound('Material not found');
@@ -113,7 +126,17 @@ class MaterialService {
     if (data.description !== undefined) updates.description = sanitizeInput(data.description);
     if (data.fileURL !== undefined) updates.fileURL = data.fileURL;
     if (data.fileName !== undefined) updates.fileName = data.fileName;
+    if (data.originalExtension !== undefined) updates.originalExtension = data.originalExtension;
     if (data.htmlContent !== undefined) updates.htmlContent = data.htmlContent;
+    if (Array.isArray(data.flashcards)) {
+      updates.flashcards = data.flashcards.map((fc, idx) => ({
+        id: String(fc.id || `fc_${idx + 1}`),
+        front: sanitizeInput(String(fc.front || '')),
+        back: sanitizeInput(String(fc.back || '')),
+        tag: sanitizeInput(String(fc.tag || 'Concept')),
+        reviewed: Boolean(fc.reviewed)
+      }));
+    }
     if (data.passed !== undefined) updates.passed = Boolean(data.passed);
     updates.updatedAt = new Date().toISOString();
 
@@ -130,10 +153,12 @@ class MaterialService {
   }
 
   /**
-   * Update progress / passed status (called after passing quiz)
+   * Update progress / passed status (called after passing quiz or completing flashcard deck review)
    */
   async updateProgress(userUid, courseUid, lessonUid, materialUid, passed = true) {
-    const matRef = db.ref(`courses/${userUid}/${courseUid}/Lessons/${lessonUid}/Materials/${materialUid}`);
+    const matRef = db.ref(
+      `courses/${userUid}/${courseUid}/Lessons/${lessonUid}/Materials/${materialUid}`
+    );
     const snapshot = await matRef.once('value');
     if (!snapshot.exists()) {
       throw ApiError.notFound('Material not found');
@@ -154,7 +179,9 @@ class MaterialService {
    * Delete a material and remove its file from storage
    */
   async deleteMaterial(userUid, courseUid, lessonUid, materialUid) {
-    const matRef = db.ref(`courses/${userUid}/${courseUid}/Lessons/${lessonUid}/Materials/${materialUid}`);
+    const matRef = db.ref(
+      `courses/${userUid}/${courseUid}/Lessons/${lessonUid}/Materials/${materialUid}`
+    );
     const snapshot = await matRef.once('value');
     if (!snapshot.exists()) {
       throw ApiError.notFound('Material not found');
@@ -162,10 +189,8 @@ class MaterialService {
 
     const materialData = snapshot.val();
 
-    // Delete file from Firebase Storage if URL or fileName exists
     try {
       if (bucket && materialData.fileURL) {
-        // Extract file path from URL or construct default path
         const decodedUrl = decodeURIComponent(materialData.fileURL);
         const match = decodedUrl.match(/\/o\/([^?]+)/);
         if (match && match[1]) {

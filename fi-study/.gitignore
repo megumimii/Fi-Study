@@ -24,6 +24,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+src/firebase-config.js
 
 # Testing
 firebase.json
